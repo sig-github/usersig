@@ -40,6 +40,7 @@ class _BatterieWidgetState extends State<BatterieWidget> {
   //final List _rows = [];
 
 
+
   Future<void> getData() async {/*fonction qui permet de récupérer les lignes de données contenant les informations sur la
     batterie*/
 
@@ -89,7 +90,7 @@ class _BatterieWidgetState extends State<BatterieWidget> {
           SoH,
           bmstype,
           tension,
-          capagained - capaloosed,
+          (SoC/100)*72,
           3.2 * nbrecellules,
           temperature,
           activity,

@@ -46,6 +46,11 @@ dependencies:
   convert: ^3.1.1
   async: ^2.10.0
   dio: ^5.1.1
+  file_picker: ^5.3.2
+  path: ^1.8.3
+  archive: ^3.3.7
+  file_selector: ^0.9.3
+  path_provider: ^2.0.15
 
 dev_dependencies:
   flutter_test:

@@ -21,20 +21,21 @@ class CelluleDetail extends StatefulWidget {
   State<CelluleDetail> createState() => _CelluleDetailState();
 }
 int currentPage = 1;
+
 class _CelluleDetailState extends State<CelluleDetail> {
-  List<ChartSeries<CellData, DateTime>> _seriesData = []; //Tableau de series de courbes
+  List<ChartSeries<CellData, DateTime>> _seriesData = [];//Tableau de series de courbes
   late ZoomPanBehavior _zoomPanBehavior; //variable pour les propriétés de zooming de la courbe
 
-  final int pageSize = 144; //taille des lignes de données de 00h à 23h59 en respectant un débit de 10minutes d'intervalle
+  //final int pageSize = 144; //taille des lignes de données de 00h à 23h59 en respectant un débit de 10minutes d'intervalle
   //bool isPrevious = false;
   int nombreJour = 0;// variable pour stocker le nombre de jour dans un mois quelconque
   DateFormat format = DateFormat('HH:mm'); //Variable pour la mise des heures en format heure:minutes
-
+  String date = "";
 
   Future getNumberPage() async{ //fonction pour récupérer le nombre de jours et le stocker dans la variable nombreJour
 
     final resu = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php'));
-    final jour = jsonDecode(resu.body);
+    final jour = json.decode(resu.body);
 
     nombreJour = jour[0]['nombrejours'];
   }
@@ -73,9 +74,13 @@ class _CelluleDetailState extends State<CelluleDetail> {
         datacells.add(CellData(id: value[i][0], heure: format.parse(value[i][1]), tension: value[i][2])); /* On ajoute un objet CellData dont les valeurs
         correspondent à chaque ligne de value dans la liste datacells
         */
+        //id: value[i][0],
+        setState(() {
+          date= value[i][3].toString();
+        });
       }
       seriesData.add( /*On ajoute maintenant la serie avec les données de series correspondant à chaque cellules*/
-        SplineSeries(
+        LineSeries(
             //animationDelay: 2000,
             dataSource: datacells,
             isVisible: true,
@@ -357,7 +362,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
                                             qu'on connait le nombre de lignes, et si on ne le connaissait pas???*/
                                             autoScrollingMode: AutoScrollingMode.start,
                                             dateFormat: DateFormat.Hm(),
-                                            autoScrollingDelta: 144,
+                                            //autoScrollingDelta: 144,
                                             isVisible: true, // A vérifier (à première vue c'est pour éffacer les grilles)
                                             interval: 1,
                                             borderWidth: 0,
@@ -373,7 +378,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
                                             borderWidth: 0,
                                             borderColor: Colors.transparent,
                                           ),
-                                          title: ChartTitle(text: 'Tension en fonction du temps au jour $currentPage',
+                                          title: ChartTitle(text: 'Tension en fonction du temps au jour du $date',
                                           textStyle: const
                                               TextStyle(fontFamily:'Nunito' , fontSize:13.0 , fontStyle:FontStyle.normal,
                                               fontWeight:FontWeight.w700, color: Colors.black)),
@@ -386,7 +391,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
 
                               IconButton(
                                 onPressed:(){
-                                  if(currentPage==nombreJour-1){
+                                  if(currentPage==nombreJour){
                                     return;
                                   }else{
                                     setState(() {

@@ -96,21 +96,21 @@ class _CelluleWidgetState extends State<CelluleWidget> {
                                        const Padding(padding: EdgeInsets.only(top: 5.0)),
 
                                        LinearProgressIndicator(
-                                         value: (cells[index].tension / 3650),
-                                         semanticsValue: "${((cells[index].tension - 2500) / (3650-2500))}", //* (3650 - 2500) + 2500
-                                         semanticsLabel: "${((cells[index].tension - 2500) / (3650-2500))}", //* (3650 - 2500) + 2500
+                                         value: (cells[index].tension / 4500),
+                                         semanticsValue: "${((cells[index].tension - 2000) / (4500-2000))}", //* (3650 - 2500) + 2500
+                                         semanticsLabel: "${((cells[index].tension - 2000) / (4500-2500))}", //* (3650 - 2500) + 2500
                                          minHeight: 6,
                                          backgroundColor: Colors.black12,
                                        ),
                                        const Row(
                                          children: [
-                                           Text('2500mV',
+                                           Text('2000mV',
                                                style: TextStyle(fontFamily:'Nunito' , fontSize:10.0 , fontStyle:FontStyle.normal,
                                                    fontWeight:FontWeight.w700, color: Colors.black), textAlign: TextAlign.left),
 
                                            SizedBox(width: 310),
 
-                                           Text('3650mV',
+                                           Text('4500mV',
                                                style: TextStyle(fontFamily:'Nunito' , fontSize:10.0 , fontStyle:FontStyle.normal,
                                                    fontWeight:FontWeight.w700, color: Colors.black), textAlign: TextAlign.right)
                                          ],
