@@ -310,7 +310,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         const Text(
-                                            'Tension / Capacité',
+                                            'Tension / Capacité restante',
                                             style: TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w800)
                                         ),
 

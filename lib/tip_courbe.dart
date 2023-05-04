@@ -21,13 +21,12 @@ List<ChartDataCourbes> datas = [
   /*ChartDataCourbes(temperature: 25,valSoC: 96, tension: 52985, temps: 1, intensite: 0.5),*/
 ];
 
-List<ChartDataCourbes> dataso = [
-
-];//liaison effectué Backend pour les courbes
-int currentPagee = 1;
+//liaison effectué Backend pour les courbes
+int currentPagio = 1;
 
 class _TipCourbeState extends State<TipCourbe> {
   //bool _showDefaultGraph = true;
+  List<ChartDataCourbes> dataso = [];
   final int pageSizee = 24;
   int nombreJours = 0;
   String entryTime = '';
@@ -56,7 +55,7 @@ class _TipCourbeState extends State<TipCourbe> {
 
   Future<List<dynamic>> fetchMySQLData() async{ /*on crée une fonction fetchMySQLData() pour récupérer les données avec la
     passerelle PHP puis on stocke dans data qu'on retourne à la fonction*/
-    var urlo = 'http://localhost/testsig1/.vs/courbebattun.php? pages=$currentPagee';
+    var urlo = 'http://localhost/testsig1/.vs/courbebattun.php? pages=$currentPagio';
     final res = await http.get(Uri.parse(urlo)); //courbebatt.php en général
     var data = json.decode(res.body);
     return data;
@@ -99,12 +98,13 @@ class _TipCourbeState extends State<TipCourbe> {
 
   List<ChartSeries<ChartDataCourbes, dynamic>> _createDefaultTensionTemps(List<ChartDataCourbes> dats) {// Liste de la partie Tension/temps, C'est un truc propre aux courbes
     return <ChartSeries<ChartDataCourbes, dynamic>>[
-      SplineAreaSeries(
+      //SplineAreaSeries
+      AreaSeries(
         animationDelay: 5,
         dataSource: dats,
         xValueMapper: (ChartDataCourbes data, _) => data.heure,
         yValueMapper: (ChartDataCourbes data, _) => data.tension,
-        splineType: SplineType.natural,
+        //SplineType: SplineType.natural,
         gradient: LinearGradient(
           colors: [
             AppStyle.spline_color,
@@ -114,7 +114,7 @@ class _TipCourbeState extends State<TipCourbe> {
           end: Alignment.bottomCenter,
         ),
       ),
-      SplineSeries(
+      LineSeries(
           animationDelay: 5,
           dataSource: dats,
           color: AppStyle.accent_color,
@@ -134,12 +134,12 @@ class _TipCourbeState extends State<TipCourbe> {
     List<ChartSeries<ChartDataCourbes, dynamic>> _intensiteTemps(List<ChartDataCourbes> dats) { //Liste de la partie intensité/temps
 
       return <ChartSeries<ChartDataCourbes, dynamic>>[
-        SplineAreaSeries(
+        AreaSeries(
           animationDelay: 10,
           dataSource: dats,
           xValueMapper: (ChartDataCourbes data, _) => data.heure,
           yValueMapper: (ChartDataCourbes data, _) => data.intensite,
-          splineType: SplineType.natural,
+          //splineType: SplineType.natural,
           gradient: LinearGradient(
             colors: [
               AppStyle.spline_color,
@@ -149,7 +149,7 @@ class _TipCourbeState extends State<TipCourbe> {
             end: Alignment.bottomCenter,
           ),
         ),
-        SplineSeries(
+        LineSeries(
             animationDelay: 10,
             dataSource: dats,
             color: AppStyle.accent_color,
@@ -272,11 +272,11 @@ class _TipCourbeState extends State<TipCourbe> {
                             children: [
                               IconButton(
                                 onPressed:(){
-                                  if(currentPagee==1){
+                                  if(currentPagio==1){
                                     return;
                                   }else{
                                     setState(() {
-                                      currentPagee = currentPagee - 1;
+                                      currentPagio = currentPagio - 1;
                                     });
                                   }
                                 },
@@ -340,11 +340,11 @@ class _TipCourbeState extends State<TipCourbe> {
 
                               IconButton(
                                 onPressed:(){
-                                  if(currentPagee==nombreJours-1){
+                                  if(currentPagio==nombreJours-1){
                                     return;
                                   }else{
                                     setState(() {
-                                      currentPagee = currentPagee + 1;
+                                      currentPagio = currentPagio + 1;
                                     });
                                   }
                                 },
@@ -384,7 +384,7 @@ class _TipCourbeState extends State<TipCourbe> {
 
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                hintText: '2022-03-02 00:00:00',
+                                hintText: '2023-03-02 00:00:00',
                               ),
 
                               onChanged: (value){
@@ -409,7 +409,7 @@ class _TipCourbeState extends State<TipCourbe> {
                                   fontStyle:FontStyle.normal, fontWeight: FontWeight.w700),
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                hintText: '2022-03-02 00:00:00',
+                                hintText: '2023-03-02 00:00:00',
                               ),
                               onChanged: (value){
                                 outtaTime = value;

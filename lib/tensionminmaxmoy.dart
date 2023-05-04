@@ -32,15 +32,15 @@ class _TensionMinMoyMaxState extends State<TensionMinMoyMax>{
     final result = await http.get(Uri.parse('http://localhost/testsig1/.vs/tmoyminmax.php'));/*On récupère le résultat de la requête
     à travers la variable res déclarée final*/
     var data = json.decode(result.body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
-    for(int currentIndex = 0 ;currentIndex < data.length; currentIndex++) {/*on parcourt la liste de tous les éléments de chaque
+    for(int currentInd= 0 ;currentInd < data.length; currentInd++) {/*on parcourt la liste de tous les éléments de chaque
     ligne dans data , on converti chaque élément dan le type requis pour l'objet et on change les variables de l'objets, puis
     on applique un setState() pour mettre à jour le Widget*/
-      var row = data[currentIndex];
-      String idmincell = row['idmincell'];
-      String idmaxcell = row['idmaxcell'];
-      int tensionmaxcell = int.parse(row['tensionmaxcell']);
-      int tensionmincell = int.parse(row['tensionmincell']);
-      int tensionmoycell = int.parse(row['tensionmoycell']);
+      var row = data[currentInd];
+      String idmincell = row[3];
+      String idmaxcell = row[1];
+      int tensionmaxcell = int.parse(row[0]);
+      int tensionmincell = int.parse(row[2]);
+      int tensionmoycell = int.parse(row[4]);
 
       setState(() {
         idcellmin = idmincell;
