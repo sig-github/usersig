@@ -1,15 +1,18 @@
-
 /*importations des librairies*/
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:usersig/cells_chartdata.dart';
+import 'package:usersig/tensionminmaxmoy.dart';
 import 'app_style.dart';
 import 'cellule_widget.dart';
 import 'package:http/http.dart'  as http; //pour la communication php mysql et flutter
 import 'dart:convert'; //certainement pour convertir le json
-import 'dart:async';//sert à quoi??
+import 'dart:async'; //sert à quoi??
 
 class CelluleDetail extends StatefulWidget {
   const CelluleDetail({Key? key}) : super(key: key);
@@ -17,55 +20,78 @@ class CelluleDetail extends StatefulWidget {
   @override
   State<CelluleDetail> createState() => _CelluleDetailState();
 }
-
+int currentPage = 1;
 class _CelluleDetailState extends State<CelluleDetail> {
-  List<ChartSeries<CellData, int>> _seriesData = [];
-  //List <CellData> datacells = [];
+  List<ChartSeries<CellData, DateTime>> _seriesData = []; //Tableau de series de courbes
+  late ZoomPanBehavior _zoomPanBehavior; //variable pour les propriétés de zooming de la courbe
 
-  @override
-  void initState() { //fonction qui s'exécute au début du programme et une seule fois
-    super.initState();
-    _getData();
+  final int pageSize = 144; //taille des lignes de données de 00h à 23h59 en respectant un débit de 10minutes d'intervalle
+  //bool isPrevious = false;
+  int nombreJour = 0;// variable pour stocker le nombre de jour dans un mois quelconque
+  DateFormat format = DateFormat('HH:mm'); //Variable pour la mise des heures en format heure:minutes
+
+
+  Future getNumberPage() async{ //fonction pour récupérer le nombre de jours et le stocker dans la variable nombreJour
+
+    final resu = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php'));
+    final jour = jsonDecode(resu.body);
+
+    nombreJour = jour[0]['nombrejours'];
   }
 
+  @override
+  void initState() { //fonction qui execute au debut du programme et une seule fois
+    super.initState();
+    getNumberPage();
+    _getData();
+    _zoomPanBehavior = ZoomPanBehavior(
+      enableDoubleTapZooming: true,
+      enablePinching: true,
+      enablePanning: true,
+      // Enables the selection zooming
+      enableSelectionZooming: true,
+      enableMouseWheelZooming : true,
+    );
+  }
 
-  Future<void> _getData() async {
-    var response = await http.get(Uri.parse('http://localhost/testsig1/.vs/cellsqueryo.php'));/* Récupération des éléments
+  Future<void> _getData() async { //fonction pour récupérer les données pour notre courbe
+    var url = 'http://localhost/testsig1/.vs/cellsqueryo.php? page=$currentPage';
+    var response = await http.get(Uri.parse(url));/* Récupération des éléments
     de la requête PHP*/
     var data = json.decode(response.body); //On décode le json qui a été envoyé et on le stocke dans la variable data
 
-    List<ChartSeries<CellData, int>> seriesData = [];// on crée et initialise une Liste de series de données
+    List<ChartSeries<CellData, DateTime>> seriesData = [];// on crée et initialise une Liste de series de données
     data.forEach((key, value) //Pour chaque élément clé du json envoyé faire ce qui est en accolade
     {
       List <CellData> datacells = []; /*on crée et initialise une liste d'objet CellData pour stocker les données de
       chaque cellule sur un temps donné. Je l'ai mis là parce qu'il faut le réinitialiser après utilisation*/
-      /*if (kDebugMode) {
+      if (kDebugMode) {
         print('$key');
-      }*/
-      for(int i = 0; i < value.length; i++) { /* Pour chaque élément dans le tableau contenant les lignes temps et valeur de
+      }
+      for(int i = 0; i < value.length; i++) { /* Pour chaque lignes temps et valeur de
       tension de chaque cellule faire*/
-        datacells.add(CellData(id: value[i][0], tension: value[i][1])); /* On ajoute un objet CellData dont les valeurs
+        datacells.add(CellData(id: value[i][0], heure: format.parse(value[i][1]), tension: value[i][2])); /* On ajoute un objet CellData dont les valeurs
         correspondent à chaque ligne de value dans la liste datacells
         */
       }
       seriesData.add( /*On ajoute maintenant la serie avec les données de series correspondant à chaque cellules*/
         SplineSeries(
-            animationDelay: 2000,
+            //animationDelay: 2000,
             dataSource: datacells,
             isVisible: true,
             enableTooltip: true,
             color: (() {
-              switch (key) { //pour attribuer une couleurs de serie à chaque cellule
+              switch (key) { //pour attribuer une couleur de serie à chaque cellule
                 case 'tensioncell0':
                   return Colors.red;
                 case 'tensioncell1':
                   return Colors.orange;
                 case 'tensioncell2':
-                  return Colors.blue;
+                  return Colors.grey;
                 case 'tensioncell3':
                   return Colors.black;
                 case 'tensioncell4':
-                  return Colors.amber;
+                  return Colors.teal;
                 case 'tensioncell5':
                   return Colors.deepPurpleAccent;
                 case 'tensioncell6':
@@ -82,7 +108,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
               color: Colors.white,
               borderWidth: 2,
               shape: DataMarkerType.circle,
-              borderColor: (() {//pour attribuer une couleurs de bordure de marqueur à chaque cellule
+              borderColor: (() {//pour attribuer une couleur de bordure de marqueur à chaque cellule
                 switch (key) {
                   case 'tensioncell0':
                     return Colors.red;
@@ -107,7 +133,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
               })(),
               isVisible: false,
             ),
-            xValueMapper: (CellData data, _) => data.id,
+            xValueMapper: (CellData data, _) => data.heure,
             yValueMapper: (CellData data, _) => data.tension)
       );
 
@@ -116,7 +142,14 @@ class _CelluleDetailState extends State<CelluleDetail> {
         _seriesData = seriesData;
       });
     });
+    /*if(isPrevious==false) {
+      currentPage += currentPage;
+    }else{
+      currentPage -= currentPage;
+    }*/
   }
+
+
 
 
 
@@ -169,7 +202,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
               },
               child: const CircleAvatar(
 
-                //backgroundColor: _colors, //là la couleur est affecté par défaut au background (PLIMP)
+                //backgroundColor: _colors, //là la couleur est affectée par défaut au background (PLIMP)
                 backgroundImage: AssetImage('assets/james.jpg'), //image d'arrière plan on concatène une référence globale qui va appeler chaque image dans notre liste correspondant en un nom
                 /*child: Text( //Donc là par defaut je lui ai aussi assigné la valeur de nameInitial, si image ça n'apparaitra pas sinon oui (PLIMP)
                         nameInitial,
@@ -228,224 +261,173 @@ class _CelluleDetailState extends State<CelluleDetail> {
                   ]
                 ),
 
-                const SizedBox(height: 50.0),
+                const SizedBox(height: 20.0),
 
-                const CelluleWidget(),//appel de l'entité CelluleWidget( )
+                const TensionMinMoyMax(), //appel du constructeur de l'entité TensionMinMoyMax
+
+                const SizedBox(height: 10.0),
+
+                const SizedBox(width:770.0 ,child: CelluleWidget()),//appel de l'entité CelluleWidget( )
 
                 const SizedBox(height: 60.0),
 
-                Center(//Box pour toutes les courbes
-                  //taille de box courbes
+                Center(//Box pour toutes les courbes taille de box courbes
                     child: Column(
                       children: [
-                        Row( //les trois box pour afficher les Tensions min, moy et max des cellules
-                          //Vont varier en fonction des points de chaque courbe pris à un moment donné Comment faire?
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width:200,
-                              child: Card(
-                                  elevation: 1,
-                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(2.0))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 25.0, bottom: 25.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              width: 20.0,
-                                              height: 20.0,
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.lightGreen,
-                                                  borderRadius: BorderRadius.all(Radius.circular(2.0))
-                                              ),
-                                            )
-                                          ],
-                                        ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                  onPressed:(){
+                                    _zoomPanBehavior.zoomIn();
+                                    setState(() {
 
-                                        const Padding(padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0)),
-
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Text(
-                                                'Tension min',
-                                                style: TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w800)
-                                            ),
-
-                                            Padding(padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0)),
-
-                                            Text(
-                                                'valTension',
-                                                style: TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal)
-                                            ),
-
-                                            Text(
-                                              'nomdeCell' ,
-                                              style: TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal),
-                                              textAlign: TextAlign.right,
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
+                                    });
+                                  },
+                                  icon: const Icon(Icons.add),
+                                  iconSize: 15
                               ),
-                            ),
+                              IconButton(
+                                  onPressed:(){
+                                    _zoomPanBehavior.zoomOut();
+                                    setState(() {
 
-                            SizedBox(
-                              width:200,
-                              child: Card(
-                                  elevation: 1,
-                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(2.0))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 25.0, bottom: 25.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              width: 20.0,
-                                              height: 20.0,
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.lightGreen,
-                                                  borderRadius: BorderRadius.all(Radius.circular(2.0))
-                                              ),
-                                            )
-                                          ],
-                                        ),
-
-                                        const Padding(padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0)),
-
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Text(
-                                                'Tension moy',
-                                                style: TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w800)
-                                            ),
-
-                                            Padding(padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0)),
-
-                                            Text(
-                                                'valTension',
-                                                style: TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal)
-                                            ),
-
-                                            Text(
-                                              'nomdeCell' ,
-                                              style: TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal),
-                                              textAlign: TextAlign.right,
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
+                                    });
+                                  },
+                                  icon: const Icon(Icons.remove),
+                                  iconSize: 15
                               ),
-                            ),
+                              IconButton(
+                                  onPressed:(){
+                                    _zoomPanBehavior.reset();
+                                    setState(() {
 
-                            SizedBox(
-                              width:200,
-                              child: Card(
-                                  elevation: 1,
-                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(2.0))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 25.0, bottom: 25.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              width: 20.0,
-                                              height: 20.0,
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.lightGreen,
-                                                  borderRadius: BorderRadius.all(Radius.circular(2.0))
-                                              ),
-                                            )
-                                          ],
-                                        ),
+                                    });
+                                  },
+                                  icon: const Icon(Icons.replay_circle_filled_outlined),
+                                  iconSize: 15
+                              )
+                            ],
+                          ),
 
-                                        const Padding(padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0)),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed:(){
+                                  if(currentPage==1){
+                                    return;
+                                  }else{
+                                    currentPage =currentPage - 1;
+                                    _getData();
+                                    setState(() {
 
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Text(
-                                                'Tension max',
-                                                style: TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w800)
-                                            ),
+                                    });
+                                  }
+                                },
 
-                                            Padding(padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0)),
-
-                                            Text(
-                                                'valTension',
-                                                style: TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal)
-                                            ),
-
-                                            Text(
-                                              'nomdeCell' ,
-                                              style: TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal),
-                                              textAlign: TextAlign.right,
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
+                                icon: const Icon(
+                                  Icons.arrow_back,
+                                  size: 15.0,
+                                ),
+                                /*child: const Text('précédent',
+                            style:TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w600)),*/
                               ),
-                            ),
-                          ],
-                        ),
+                             Padding(
+                               padding: const EdgeInsets.only(right: 20.0),
+                               child: SizedBox(
+                                 width: 1000.0,
+                                 child: SfCartesianChart(
+                                          legend: Legend(isVisible:true),
+                                          zoomPanBehavior: _zoomPanBehavior,
+                                          margin: const EdgeInsets.all(0),
+                                          borderWidth: 0,
+                                          borderColor: Colors.transparent,
+                                          plotAreaBorderWidth: 0,
+                                          tooltipBehavior: TooltipBehavior(enable: true,elevation: 1),
+                                          primaryXAxis: DateTimeAxis(
+                                            intervalType: DateTimeIntervalType.auto,
+                                            title: AxisTitle(text: 'heure:minutes', textStyle: const
+                                                TextStyle(fontFamily:'Nunito' , fontSize:12.0 , fontStyle:FontStyle.normal,
+                                                fontWeight:FontWeight.w700, color: Colors.black), alignment: ChartAlignment.near),
+                                            /*minimum: curveXaxisStart, //valeur minimale de l'axe des axis aux regards des données
+                                            maximum: 150,*/ /*valeur maximale de l'axe des axis aux regards des données. Hic c'est parce
+                                            qu'on connait le nombre de lignes, et si on ne le connaissait pas???*/
+                                            autoScrollingMode: AutoScrollingMode.start,
+                                            dateFormat: DateFormat.Hm(),
+                                            autoScrollingDelta: 144,
+                                            isVisible: true, // A vérifier (à première vue c'est pour éffacer les grilles)
+                                            interval: 1,
+                                            borderWidth: 0,
+                                            borderColor: Colors.transparent,
+                                          ),
+                                          primaryYAxis: NumericAxis(
+                                            title: AxisTitle(text: 'millivolt', textStyle: const
+                                                TextStyle(fontFamily:'Nunito' , fontSize:12.0 , fontStyle:FontStyle.normal,
+                                                fontWeight:FontWeight.w700, color: Colors.black), alignment: ChartAlignment.near),
+                                            autoScrollingMode: AutoScrollingMode.start,
+                                            interval: 1000,
+                                            isVisible: true,
+                                            borderWidth: 0,
+                                            borderColor: Colors.transparent,
+                                          ),
+                                          title: ChartTitle(text: 'Tension en fonction du temps au jour $currentPage',
+                                          textStyle: const
+                                              TextStyle(fontFamily:'Nunito' , fontSize:13.0 , fontStyle:FontStyle.normal,
+                                              fontWeight:FontWeight.w700, color: Colors.black)),
 
-                        const SizedBox(height: 10.0),
+                                          series: _seriesData
+                                      ),
+                               ),
+                             ),
 
-                        Center(
-                          child: SfCartesianChart(
-                              margin: const EdgeInsets.all(0),
-                              borderWidth: 0,
-                              borderColor: Colors.transparent,
-                              plotAreaBorderWidth: 0,
-                              tooltipBehavior: TooltipBehavior(enable: true,elevation: 1),
-                              primaryXAxis: NumericAxis(
-                                minimum: 1, //valeur minimale de l'axe des axis aux regards des données
-                                maximum: 570, /*valeur maximale de l'axe des axis aux regards des données. Hic c'est parce
-                                qu'on connait le nombre de lignes, et si on ne le connaissait pas???*/
-                                isVisible: true, // A vérifier (à première vue c'est pour éffacer les grilles)
-                                interval: 1,
-                                borderWidth: 0,
-                                borderColor: Colors.transparent,
-                              ),
-                              primaryYAxis: NumericAxis(
-                                minimum: 3325,
-                                maximum: 3333,
-                                interval: 6,
-                                isVisible: true,
-                                borderWidth: 0,
-                                borderColor: Colors.transparent,
-                              ),
-                              title: ChartTitle(text: 'Tension(mv) en fonction du temps(h)',
-                              textStyle: const
-                                  TextStyle(fontFamily:'Nunito' , fontSize:13.0 , fontStyle:FontStyle.normal,
-                                  fontWeight:FontWeight.w700, color: Colors.black)),
 
-                              series: _seriesData
+                              IconButton(
+                                onPressed:(){
+                                  if(currentPage==nombreJour-1){
+                                    return;
+                                  }else{
+                                    setState(() {
+                                      currentPage = currentPage + 1;
+                                      _getData();
+                                    });
+                                  }
+                                },
+
+                                icon: const Icon(
+                                  Icons.arrow_forward,
+                                  size: 15.0,
+                                ),
+                              )
+                            ],
                           ),
                         ),
 
-                        const SizedBox(height: 60.0),
+                        /*
+                        const SizedBox(height: 15),
+
+                        Align(
+                            alignment: Alignment.center,
+                            child: ElevatedButton(
+                              onPressed: () {
+
+                              },
+                              child: const Text(
+                                'Mettre a jour',
+                                style:TextStyle(fontFamily: 'Nunito',
+                                    fontSize: 13.0,
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight: FontWeight.w700) ,
+                              ),
+
+                            )
+                        ),*/
+                        const SizedBox(height: 40)
                       ],
                     ),
-                ),
-
+                )
               ],
             ),
           ),

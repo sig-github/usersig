@@ -165,9 +165,9 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                   
                                   const Padding(padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0)),
                                   
-                                  Column(
+                                  const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
+                                    children: [
                                       Text(
                                           'Battery',
                                         style: TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w800)
@@ -475,10 +475,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                                       const Padding(padding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 0.0)),
 
-                                                      Center(
+                                                      const Center(
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: const [
+                                                          children: [
                                                             Icon(
                                                               Icons.device_thermostat,
                                                               size: 18.0,
@@ -528,10 +528,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                                       const Padding(padding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 0.0)),
 
-                                                      Center(
+                                                      const Center(
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: const [
+                                                          children: [
                                                             Icon(
                                                               Icons.device_thermostat,
                                                               size: 18.0,
@@ -582,10 +582,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                                       const Padding(padding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 0.0)),
 
-                                                      Center(
+                                                      const Center(
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: const [
+                                                          children: [
                                                             Icon(
                                                               Icons.device_thermostat,
                                                               size: 18.0,
@@ -635,10 +635,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                                       const Padding(padding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 0.0)),
 
-                                                      Center(
+                                                      const Center(
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: const [
+                                                          children: [
                                                             Icon(
                                                               Icons.device_thermostat,
                                                               size: 18.0,
@@ -682,10 +682,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                                 const Padding(padding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 0.0)),
 
-                                                Center(
+                                                const Center(
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: const [
+                                                    children: [
                                                       Icon(
                                                         Icons.device_thermostat,
                                                         size: 18.0,
@@ -1055,10 +1055,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                         const SizedBox(width: 16.0),
 
-                                        Align(
+                                        const Align(
                                           alignment: Alignment.centerRight,
                                           child: Column(
-                                            children: const [
+                                            children: [
                                               Icon(
                                                 Icons.pix,
                                                 size: 40,
@@ -1090,13 +1090,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                     const Center(
                       child: SizedBox(//les courbes
-                              width : 683.0, //taille de box courbes
+                              width : 850.0, //taille de box courbes
                               child: TipCourbe() //appel de la classe qui instancie les courbes
                             ),
                     ),
-
-                   
-
                   ],
                 ),
               ),

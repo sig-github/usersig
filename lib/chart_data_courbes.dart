@@ -6,6 +6,10 @@ class ChartDataCourbes extends ChartData{
   int temps = 0;
   double intensite = 0;
   double temperature = 25;
+  String date = '';
+  DateTime heure = DateTime(2023,1,1,0,0,0);
 
-  ChartDataCourbes({required super.valSoC,required this.tension, required this.temps, required this.intensite, required this.temperature});
+
+  ChartDataCourbes({required super.valSoC,required this.tension, required this.temps,
+    required this.intensite, required this.temperature, required this.date, required this.heure});
 }

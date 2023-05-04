@@ -117,40 +117,11 @@ class _BatterieState extends State<Batterie> {
                               )
                           ),
                           Align(
-                            alignment: Alignment.topRight,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-
-                              },
-                              /*onHover: (value){
-                                if(value){
-                                  setState(() {
-
-                                  });
-                                }
-                              }, y penser après pour l'embellissement*/
-                              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-                                side: MaterialStatePropertyAll<BorderSide>(BorderSide(color: Colors.lightGreen,
-                                width: 1))
-                              ),
-                              icon: const Icon(Icons.add_box_outlined, size: 15),
-                              label: const Text(
-                                'Ajouter une batterie',
-                                style:TextStyle(fontFamily: 'Nunito',
-                                    fontSize: 13.0,
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w700) ,
-                              ),
-
-                            )
-                          )
-                          ,
-                          Align(
                               alignment: Alignment.topLeft,
                               child: Builder(
                                   builder: (context) {
                                     return const Text(
-                                       '0', //en gros il faudra créer un index pour gérer ça si je dois extraire une liste au complet
+                                       '1', //en gros il faudra créer un index pour gérer ça si je dois extraire une liste au complet
                                       //à changer lorsqu'on récupèrera les infos de la DB pour compter le nbre de batterie
                                       style: TextStyle(fontFamily: 'Nunito',
                                           fontSize: 18.0,
@@ -160,6 +131,35 @@ class _BatterieState extends State<Batterie> {
                                   }
                               )
                           ),
+                          Align(
+                              alignment: Alignment.topRight,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+
+                                },
+                                /*onHover: (value){
+                                if(value){
+                                  setState(() {
+
+                                  });
+                                }
+                              }, y penser après pour l'embellissement*/
+                                style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+                                    side: MaterialStatePropertyAll<BorderSide>(BorderSide(color: Colors.lightGreen,
+                                        width: 1))
+                                ),
+                                icon: const Icon(Icons.add_box_outlined, size: 15),
+                                label: const Text(
+                                  'Ajouter une batterie',
+                                  style:TextStyle(fontFamily: 'Nunito',
+                                      fontSize: 13.0,
+                                      fontStyle: FontStyle.normal,
+                                      fontWeight: FontWeight.w700) ,
+                                ),
+
+                              )
+                          )
+
                         ],
                       ),
                       const SizedBox(height: 10.0),

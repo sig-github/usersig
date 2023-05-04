@@ -80,32 +80,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
       double SoH = double.parse(row['SoH']);
       double temperature = double.parse(row['temperature']);
       int nbrecellules = int.parse(row['nbrecellules']);
-
-      /*double tensionmaxcell = double.parse(row['tensionmaxcell']);
-            double tempmaxcell = double.parse(row['tempmaxcell']);
-            int idmaxcell = int.parse(row['idmaxcell']);
-            double tensionmincell = double.parse(row['tensionmincell']);
-            double tempmincell = double.parse(row['tempmincell']);
-            int idmincell = int.parse(row['idmincell']);
-            double tensionmoycell = double.parse(row['tensionmoycell']);
-            double tempmoycell = double.parse(row['tempmoycell']);
-            double tensioncell1 = double.parse(row['tensioncell1']);
-            double tensioncell2 = double.parse(row['tensioncell2']);
-            double tensioncell3 = double.parse(row['tensioncell3']);
-            double tensioncell4 = double.parse(row['tensioncell4']);
-            double primo4celltemp = double.parse(row['primo4celltemp']);
-            double tensioncell5 = double.parse(row['tensioncell5']);
-            double tensioncell6 = double.parse(row['tensioncell6']);
-            double tensioncell7 = double.parse(row['tensioncell7']);
-            double tensioncell8 = double.parse(row['tensioncell8']);
-            double dernier4celltemp = double.parse(row['dernier4celltemp']);*/
-
-      /*_rows.add({'id': id, 'bmstype':bmstype, 'date':date, 'heure':heure, 'courant':courant, 'tension':tension,
-        'statusprincipal':statusprincipal,'initstatus':initstatus, 'etatchargedecharge':etatchargedecharge, 'courantmaxcharge':courantmaxcharge,
-        'courantmaxdecharge':courantmaxdecharge, 'capagained':capagained, 'capaloosed':capaloosed, 'energycharged':energycharged,
-        'energydecharged':energydecharged, 'SoC':SoC, 'SoH':SoH, 'temperature':temperature, 'nbrecellules':nbrecellules, 'activity':activity});
-            */
-
       tests[0].setBattArgument(
           bmstype,
           id,
@@ -122,20 +96,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
           courant,
           20,
           nbrecellules);
-          /*if (kDebugMode) {
-            print('$SoC,$SoH,$tension,$temperature,${capagained-capaloosed}');
-          }*/
-      //await Future.delayed(const Duration(milliseconds: 100));//trouver une alternative à ça (vidéo youtube)
-
-      /*Timer.periodic(Duration(milliseconds: 500), (timer) {
-        setState(() {
-          // Mettre à jour le compteur
-          counter++;
-          if (counter >= 10) {
-            timer.cancel(); // Annuler le timer lorsque le compteur atteint 10
-          }
-        });
-      });*/
 
       setState(() {
 
