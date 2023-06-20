@@ -1,16 +1,18 @@
 // la classe Batterie, qui représente la première vue sur la flotte de Batteries. Donc contient la liste des battéries à afficher de part la grille d'affichage
 
 /*importation des librairies*/
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart' as a;
 import 'package:file_selector/file_selector.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
+//import 'package:path_provider/path_provider.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // pour la langue plus tard
 import 'package:get/get.dart' as b;
-import 'package:get/get_connect/http/src/response/response.dart';
+//import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:usersig/batterie_widget.dart';
 import 'package:http/http.dart'  as http; //pour la communication php mysql et flutter
 import 'package:path/path.dart' as path;
@@ -34,6 +36,24 @@ class _BatterieState extends State<Batterie> {
 
   String _folderPath = '';
 
+  List tableNames = [];
+  Future<void> getTableNames() async {
+    final response = await http.get(
+        Uri.parse('http://localhost/testsig1/.vs/tablesnames.php'));
+
+
+    var data = json.decode(response.body);
+    setState(() {
+      tableNames = data;
+    });
+
+    /*if(kDebugMode){
+      print(tableNames.length);
+      print(tableNames[0]);
+      print(tableNames[1]);
+    }*/
+  }
+
   void _pickFolder() async {
     final String? directoryPath = await getDirectoryPath();
     if (directoryPath == null) {
@@ -48,11 +68,13 @@ class _BatterieState extends State<Batterie> {
   Future<void> _uploadFile() async {
     if (_folderPath != null && _folderPath!.isNotEmpty) {
       if (battName == null || battName!.isEmpty) {
-        print('Valeur de "battName" manquante');
+        if (kDebugMode) {
+          print('Valeur de "battName" manquante');
+        }
         return;
       }
 
-      String folderPath = _folderPath!;
+      String folderPath = _folderPath;
       String zipPath = path.join(folderPath, 'dossier.zip');
 
       await createZip(folderPath, zipPath);
@@ -72,16 +94,22 @@ class _BatterieState extends State<Batterie> {
 
         if (response.statusCode == 200) {
           // Request successful
-          print('Data sent successfully!');
+          if (kDebugMode) {
+            print('Data sent successfully!');
+          }
           setState(() { // pour mettre à jour après avoir géré la création de la table de batterie
 
           });
         } else {
           // Request failed
-          print('Failed to send data. Status code: ${response.statusCode}');
+          if (kDebugMode) {
+            print('Failed to send data. Status code: ${response.statusCode}');
+          }
         }
       } catch (e) {
-        print('Error sending data: $e');
+        if (kDebugMode) {
+          print('Error sending data: $e');
+        }
       }
     }
   }
@@ -91,7 +119,9 @@ class _BatterieState extends State<Batterie> {
     final folderDir = Directory(folderPath);
 
     if (!folderDir.existsSync()) {
-      print('Folder does not exist: $folderPath');
+      if (kDebugMode) {
+        print('Folder does not exist: $folderPath');
+      }
       return;
     }
 
@@ -112,7 +142,9 @@ class _BatterieState extends State<Batterie> {
 
     zipFile.writeAsBytesSync(zipBytes!);
 
-    print('ZIP file created: $zipPath');
+    if (kDebugMode) {
+      print('ZIP file created: $zipPath');
+    }
   }
 
 
@@ -261,6 +293,15 @@ class _BatterieState extends State<Batterie> {
     );
   }
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getTableNames();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -363,10 +404,10 @@ class _BatterieState extends State<Batterie> {
                               alignment: Alignment.topLeft,
                               child: Builder(
                                   builder: (context) {
-                                    return const Text(
-                                       '1', //en gros il faudra créer un index pour gérer ça si je dois extraire une liste au complet
+                                    return Text(
+                                       '${tableNames.length}', //en gros il faudra créer un index pour gérer ça si je dois extraire une liste au complet
                                       //à changer lorsqu'on récupèrera les infos de la DB pour compter le nbre de batterie
-                                      style: TextStyle(fontFamily: 'Nunito',
+                                      style: const TextStyle(fontFamily: 'Nunito',
                                           fontSize: 18.0,
                                           fontStyle: FontStyle.normal,
                                           fontWeight: FontWeight.w700),

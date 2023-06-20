@@ -38,9 +38,9 @@ class AppliSig extends StatelessWidget {
       home: HomeScreen(), //Page d'acceuil
 
       routes: { //les routes pour les autres pages utilisées dans l'application en global
-        '/batterie' : (context) => Batterie(),
-        '/batterieDetail' : (context) => BatterieDetail(),
-        '/cellulesDetail' : (context) => CelluleDetail()
+        '/batterie' : (context) => const Batterie(),
+        '/batterieDetail' : (context) => const BatterieDetail(tableName: "",battery: {}),
+        '/cellulesDetail' : (context) => const CelluleDetail(tableName: "")
       },
 
 

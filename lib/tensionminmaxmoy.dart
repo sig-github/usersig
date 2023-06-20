@@ -4,7 +4,8 @@ import 'dart:convert'; //certainement pour convertir le json
 import 'dart:async';//sert à quoi??
 
 class TensionMinMoyMax extends StatefulWidget{
-  const TensionMinMoyMax({Key? key}) : super(key: key);
+  final String tableName;
+  const TensionMinMoyMax({required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<TensionMinMoyMax> createState() => _TensionMinMoyMaxState();
@@ -29,7 +30,7 @@ class _TensionMinMoyMaxState extends State<TensionMinMoyMax>{
   Future<void> getDatas() async {/*fonction qui permet de récupérer les lignes de données contenant les informations sur la
     batterie*/
 
-    final result = await http.get(Uri.parse('http://localhost/testsig1/.vs/tmoyminmax.php'));/*On récupère le résultat de la requête
+    final result = await http.get(Uri.parse('http://localhost/testsig1/.vs/tmoyminmax.php? tableName=${widget.tableName}'));/*On récupère le résultat de la requête
     à travers la variable res déclarée final*/
     var data = json.decode(result.body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
     for(int currentInd= 0 ;currentInd < data.length; currentInd++) {/*on parcourt la liste de tous les éléments de chaque

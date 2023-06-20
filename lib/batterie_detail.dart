@@ -11,7 +11,10 @@ import 'package:usersig/tip_courbe.dart';
 
 /*le corps de la route '\batterieDetail'*/
 class BatterieDetail extends StatefulWidget {
-  const BatterieDetail({Key? key}) : super(key: key);
+  final Map<String,dynamic> battery; // On définit l'élément battery.
+  final String tableName;
+
+  const BatterieDetail({required this.tableName,required this.battery,Key? key}) : super(key: key);//on va passer en argument la liste des données d'une table de données correspondant à une Batterie
 
   @override
   State<BatterieDetail> createState() => _BatterieDetailState();
@@ -25,7 +28,6 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
   @override
   Widget build(BuildContext context) {
-
     //dataBat = ModalRoute.of(context)!.settings.arguments as Map;// passation de données
 
     return Scaffold(
@@ -1005,7 +1007,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                           InkWell( //cellules
                             onTap: (){
                               // Navigator.pushReplacementNamed(context, '/cellulesDetail');
-                              Get.to(()=> const CelluleDetail(),
+                              Get.to(()=> CelluleDetail(tableName: widget.tableName),
                                   arguments: {
                                     "nombrecellules" : Get.arguments["nombreCellule"],
                                     "classebatt" : Get.arguments["classe"],
@@ -1088,10 +1090,10 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                     const SizedBox(height: 40.0),
 
-                    const Center(
+                     Center(
                       child: SizedBox(//les courbes
                               width : 850.0, //taille de box courbes
-                              child: TipCourbe() //appel de la classe qui instancie les courbes
+                              child: TipCourbe(tableName: widget.tableName) //appel de la classe qui instancie les courbes
                             ),
                     ),
                   ],

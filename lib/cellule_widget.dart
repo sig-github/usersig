@@ -8,7 +8,8 @@ import 'dart:convert'; //certainement pour convertir le json
 import 'dart:async';//sert à quoi??
 
 class CelluleWidget extends StatefulWidget {
-  const CelluleWidget({Key? key}) : super(key: key);
+  final String tableName;
+  const CelluleWidget({required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<CelluleWidget> createState() => _CelluleWidgetState();
@@ -26,7 +27,7 @@ class _CelluleWidgetState extends State<CelluleWidget> {
   }
 
   Future<void> getCellsData() async { //fonction pour afficher la liste des cellules avec leur tension et leur température
-    final res = await http.get(Uri.parse('http://localhost/testsig1/.vs/cellscardobjquery.php')); /*On récupère le résultat de
+    final res = await http.get(Uri.parse('http://localhost/testsig1/.vs/cellscardobjquery.php? tableName=${widget.tableName}')); /*On récupère le résultat de
     la requête à travers la variable res déclarée final*/
     var data = json.decode(res.body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
     data.forEach((key, value) {

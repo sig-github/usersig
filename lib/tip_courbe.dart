@@ -11,7 +11,8 @@ import 'dart:convert'; //certainement pour convertir le json
 import 'dart:async';//sert à quoi??
 
 class TipCourbe extends StatefulWidget {
-  const TipCourbe({Key? key}) : super(key: key);
+  final String tableName;
+  const TipCourbe({required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<TipCourbe> createState() => _TipCourbeState();
@@ -41,7 +42,7 @@ class _TipCourbeState extends State<TipCourbe> {
   Future dayNumbers() async{//fonction qui permet de récupérer le nombre de jours dans un mois
     // ça se répète c'est possible de le rendre global pour ne seulement utiliser qu'un réfléchir à ça à l'optimisation
 
-    final response = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php'));
+    final response = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php? tableName=${widget.tableName}'));
 
     final numberday = jsonDecode(response.body);
     nombreJours = numberday[0]['nombrejours'];
@@ -55,7 +56,7 @@ class _TipCourbeState extends State<TipCourbe> {
 
   Future<List<dynamic>> fetchMySQLData() async{ /*on crée une fonction fetchMySQLData() pour récupérer les données avec la
     passerelle PHP puis on stocke dans data qu'on retourne à la fonction*/
-    var urlo = 'http://localhost/testsig1/.vs/courbebattun.php? pages=$currentPagio';
+    var urlo = 'http://localhost/testsig1/.vs/courbebattun.php? pages=$currentPagio&tableName=${widget.tableName}';
     final res = await http.get(Uri.parse(urlo)); //courbebatt.php en général
     var data = json.decode(res.body);
     return data;
@@ -78,7 +79,7 @@ class _TipCourbeState extends State<TipCourbe> {
 
   Future<List<ChartDataCourbes>> fetchData(String borneInferieure, String borneSuperieure) async {
     //Cette fonction permet de questionner PHP pour avoir les données entre la borneInférieure et la borneSuperieure
-    var urloo = 'http://localhost/testsig1/.vs/miseajour.php';
+    var urloo = 'http://localhost/testsig1/.vs/miseajour.php? tableName=${widget.tableName}';
     final response = await http.post(
        Uri.parse(urloo),
       body: {

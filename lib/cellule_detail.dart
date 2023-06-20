@@ -15,7 +15,8 @@ import 'dart:convert'; //certainement pour convertir le json
 import 'dart:async'; //sert à quoi??
 
 class CelluleDetail extends StatefulWidget {
-  const CelluleDetail({Key? key}) : super(key: key);
+  final String tableName; //vérifier si c'est privée à la classe un peu plus tard au cas où il y aurait un résultat bizarre.
+  const CelluleDetail({required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<CelluleDetail> createState() => _CelluleDetailState();
@@ -34,7 +35,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
 
   Future getNumberPage() async{ //fonction pour récupérer le nombre de jours et le stocker dans la variable nombreJour
 
-    final resu = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php'));
+    final resu = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php? tableName=${widget.tableName}'));
     final jour = json.decode(resu.body);
 
     nombreJour = jour[0]['nombrejours'];
@@ -56,7 +57,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
   }
 
   Future<void> _getData() async { //fonction pour récupérer les données pour notre courbe
-    var url = 'http://localhost/testsig1/.vs/cellsqueryo.php? page=$currentPage';
+    var url = 'http://localhost/testsig1/.vs/cellsqueryo.php? page=$currentPage&tableName=${widget.tableName}';
     var response = await http.get(Uri.parse(url));/* Récupération des éléments
     de la requête PHP*/
     var data = json.decode(response.body); //On décode le json qui a été envoyé et on le stocke dans la variable data
@@ -268,11 +269,11 @@ class _CelluleDetailState extends State<CelluleDetail> {
 
                 const SizedBox(height: 20.0),
 
-                const TensionMinMoyMax(), //appel du constructeur de l'entité TensionMinMoyMax
+                TensionMinMoyMax(tableName: widget.tableName), //appel du constructeur de l'entité TensionMinMoyMax
 
                 const SizedBox(height: 10.0),
 
-                const SizedBox(width:770.0 ,child: CelluleWidget()),//appel de l'entité CelluleWidget( )
+                SizedBox(width:770.0 ,child: CelluleWidget(tableName: widget.tableName)),//appel de l'entité CelluleWidget( )
 
                 const SizedBox(height: 60.0),
 
