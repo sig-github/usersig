@@ -109,14 +109,9 @@ class _BatterieWidgetState extends State<BatterieWidget> {
         /*if(kDebugMode){
           print(batteryData.length);
         }*/
-        //var row = batteryData[ind][currentIndex];
         var row = item;
-
-        //for(int i) {
           String id = row['identifiant'];
           String bmstype = row['bmstype'];
-          //String date = row['date'];
-          //String heure = row['heure'];
           double courant = double.parse(row['courant']);
 
           if (courant == 0) {
@@ -131,14 +126,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
 
           double tension = double.parse(row['tension']);
           int statusprincipal = int.parse(row['statusprincipal']);
-          //int etatchargedecharge = int.parse(row['etatchargedecharge']);
-          //double courantmaxcharge = double.parse(row['courantmaxcharge']);
-          //double courantmaxdecharge = double.parse(row['courantmaxdecharge']);
-          double capagained = double.parse(row['capagained']);
-          double capaloosed = double.parse(row['capaloosed']);
-          //double energycharged = double.parse(row['energycharged']);
-          //double energydecharged = double.parse(row['energydecharged']);
-          int initstatus = int.parse(row['initstatus']);
           double SoC = double.parse(row['SoC']);
           double SoH = double.parse(row['SoH']);
           double temperature = double.parse(row['temperature']);
@@ -148,8 +135,7 @@ class _BatterieWidgetState extends State<BatterieWidget> {
               bmstype,
               id,
               SoC,
-              initstatus,
-              (statusprincipal == 1 ? false : true),
+              (statusprincipal == 1 ? true : false),
               SoH,
               bmstype,
               tension,
@@ -164,9 +150,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
           setState(() {
 
           });
-        //}
-
-
       }
       index++;
     });

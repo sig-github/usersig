@@ -22,13 +22,12 @@ class BatterieModel{
   int nombreCells = 4;
 
 
-  void setBattArgument(String classe,String modele,double SoC, int etat, bool alerte, double SoH, String nomBms, double tension,
+  void setBattArgument(String classe,String modele,double SoC, bool alerte, double SoH, String nomBms, double tension,
       double capacite, double tensionNominale, double temperature, String batteryStatus, double courant, int cycle,
       int nombreCells){
       this.classe = classe;
       this.modele = modele;
       this.SoC = SoC;
-      this.etat = etat;
       this.alerte = alerte;
       this.SoH = SoH;
       this.nomBms = nomBms;

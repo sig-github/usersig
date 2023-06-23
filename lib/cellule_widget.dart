@@ -34,21 +34,26 @@ class _CelluleWidgetState extends State<CelluleWidget> {
        //problème besoin de SoC, pour le moment je modifierai juste tension et température
       for (int i = 0; i< value.length; i++) {
         for(int j = 0; j< Get.arguments["nombrecellules"]; j++){
-          if(cells[j].id == key){
-            cells[j].tension = int.parse(value[i][2]);
-            if(j<4) {
-              cells[j].temperature = double.parse(value[i][0]);
-            }else{
-              cells[j].temperature = double.parse(value[i][1]);
+          if(Get.arguments["nombrecellules"] == 8) { // si le nombre de cellules = 8 alors...
+            if (cells[j].id == key) {
+              cells[j].tension = int.parse(value[i][2]);
+              if (j < 4) {
+                cells[j].temperature = double.parse(value[i][0]);
+              } else {
+                cells[j].temperature = double.parse(value[i][1]);
+              }
+
+              /*if (kDebugMode) {
+                print('${cells[j].tension}, ${cells[j].temperature}');
+              }*/
+
+              setState(() {
+
+              });
             }
+          }
+          if(Get.arguments["nombrecellules"] == 16){ // si le nombre de cellules = 16 alors...
 
-            /*if (kDebugMode) {
-              print('${cells[j].tension}, ${cells[j].temperature}');
-            }*/
-
-            setState(() {
-
-            });
           }
 
         }
