@@ -26,6 +26,10 @@ LES FONCTIONS CREES ET UTILISEES DANS FLUTTER :
     En cliquant sur le bouton utilisateurSIG, on atterit sur une vue de connexion normalement (qui rentre dans l'implémentation de l'outil en ligne). Mais là on,
     on atterit plutôt sur une vue qui est renvoyée par le fichier batterie.dart.
 
+    LES RESTANT A FAIRE A CE NIVEAU : 
+      Implémentation de la vue de connexion pour récupérer les informations concernant l'utilisateur et ses batteries.
+      Implémentation de la vue de connexion pour les administrateurs.
+
 
   Partie de la classe Batterie (fichier main.dart) : 
 
