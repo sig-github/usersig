@@ -87,8 +87,9 @@ class _BatterieState extends State<Batterie> {
       });
 
       try {
+        //jsontomysqlgeneralbis.php
         a.Response response = await dio.post(
-          'http://localhost/testsig1/.vs/jsontomysqlgeneralbis.php',
+          'http://localhost/testsig1/.vs/jsontomysqlgeneralbisbis.php',
           data: formData,
         );
 

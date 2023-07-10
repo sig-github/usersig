@@ -11,10 +11,11 @@ import 'package:usersig/tip_courbe.dart';
 
 /*le corps de la route '\batterieDetail'*/
 class BatterieDetail extends StatefulWidget {
+  final int cellsNumber;
   final Map<String,dynamic> battery; // On définit l'élément battery.
   final String tableName;
 
-  const BatterieDetail({required this.tableName,required this.battery,Key? key}) : super(key: key);//on va passer en argument la liste des données d'une table de données correspondant à une Batterie
+  const BatterieDetail({required this.cellsNumber, required this.tableName, required this.battery,Key? key}) : super(key: key);//on va passer en argument la liste des données d'une table de données correspondant à une Batterie
 
   @override
   State<BatterieDetail> createState() => _BatterieDetailState();
@@ -225,7 +226,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                         const Padding(padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0)),
 
                                         Text(
-                                            '72 AH / ${Get.arguments["tensionnominale"]}V',
+                                            '72 AH / ${Get.arguments["tensionnominale"].toStringAsFixed(2)}V',//à modifier pour UDAN
                                             style: const TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal)
                                         )
                                       ],
@@ -272,7 +273,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                         const Padding(padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0)),
 
                                         Text(
-                                            '${Get.arguments["SoH"]}%',
+                                            '${Get.arguments["SoH"].toStringAsFixed(2)}%',
                                             style: const TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal)
                                         )
                                       ],
@@ -319,7 +320,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                         const Padding(padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0)),
 
                                         Text(
-                                            '${Get.arguments["tension"]} V / ${Get.arguments["capacite"].toStringAsFixed(2)} AH',
+                                            '${Get.arguments["tension"].toStringAsFixed(2)} V / ${Get.arguments["capacite"].toStringAsFixed(2)} AH',
                                             style: const TextStyle(fontFamily:'Nunito' , fontSize:14.0 , fontStyle:FontStyle.normal)
                                         )
                                       ],
@@ -365,9 +366,11 @@ class _BatterieDetailState extends State<BatterieDetail> {
 
                                         Builder(
                                             builder: (context) {
+                                              double inter = double.parse((Get.arguments["SoC"]).toStringAsFixed(2));
                                               for(double i = 0; i <= 100; i+=0.5) { /*la partie qui nous retourne chaque éléments de la grille avec
                          son vrai pourcentage*/
-                                                if (Get.arguments["SoC"] ==
+                                                //Get.arguments["SoC"]
+                                                if (inter ==
                                                     i) {
                                                   return CircularPercentIndicator(
                                                     radius: 60.0,
@@ -923,7 +926,8 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                                 const SizedBox(height: 8.0),
 
                                                 Text(
-                                                    Get.arguments["cycle"].toString(),//à faire varier en fonction du nombre de cycles
+                                                    Get.arguments["cycle"]!=null?
+                                                    Get.arguments["cycle"].toString():'0',//à faire varier en fonction du nombre de cycles
                                                     style: const TextStyle(color: Colors.black ,fontFamily:'Nunito' , fontSize:27.0 , fontStyle:FontStyle.normal, fontWeight: FontWeight.w900)
                                                 )
                                               ],
@@ -976,7 +980,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                                                 const SizedBox(height: 8.0),
 
                                                 Text(
-                                                    '${Get.arguments["courant"]}A',//à faire varier en fonction du nombre de cycles
+                                                    '${Get.arguments["courant"].toStringAsFixed(2)}A',//à faire varier en fonction du nombre de cycles
                                                     style: const TextStyle(color: Colors.black ,fontFamily:'Nunito' , fontSize:27.0 , fontStyle:FontStyle.normal, fontWeight: FontWeight.w900)
                                                 )
                                               ],
@@ -1007,7 +1011,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                           InkWell( //cellules
                             onTap: (){
                               // Navigator.pushReplacementNamed(context, '/cellulesDetail');
-                              Get.to(()=> CelluleDetail(tableName: widget.tableName),
+                              Get.to(()=> CelluleDetail(cellsNumber:widget.cellsNumber ,tableName: widget.tableName),
                                   arguments: {
                                     "nombrecellules" : Get.arguments["nombreCellule"],
                                     "classebatt" : Get.arguments["classe"],
@@ -1093,7 +1097,7 @@ class _BatterieDetailState extends State<BatterieDetail> {
                      Center(
                       child: SizedBox(//les courbes
                               width : 850.0, //taille de box courbes
-                              child: TipCourbe(tableName: widget.tableName) //appel de la classe qui instancie les courbes
+                              child: TipCourbe(cellsNumber: Get.arguments["nombreCellule"],tableName: widget.tableName) //appel de la classe qui instancie les courbes
                             ),
                     ),
                   ],

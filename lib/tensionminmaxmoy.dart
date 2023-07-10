@@ -5,7 +5,8 @@ import 'dart:async';//sert à quoi??
 
 class TensionMinMoyMax extends StatefulWidget{
   final String tableName;
-  const TensionMinMoyMax({required this.tableName,Key? key}) : super(key: key);
+  final int cellsNumber;
+  const TensionMinMoyMax({required this.cellsNumber,required this.tableName, Key? key}) : super(key: key);
 
   @override
   State<TensionMinMoyMax> createState() => _TensionMinMoyMaxState();
@@ -29,33 +30,45 @@ class _TensionMinMoyMaxState extends State<TensionMinMoyMax>{
 
   Future<void> getDatas() async {/*fonction qui permet de récupérer les lignes de données contenant les informations sur la
     batterie*/
-
-    final result = await http.get(Uri.parse('http://localhost/testsig1/.vs/tmoyminmax.php? tableName=${widget.tableName}'));/*On récupère le résultat de la requête
+    if(widget.cellsNumber == 8) {//si le nombre de cellules est égal à 8 donc wattius alors faire ceci
+      final result = await http.get(Uri.parse(
+          'http://localhost/testsig1/.vs/tmoyminmax.php? tableName=${widget
+              .tableName}')); /*On récupère le résultat de la requête
     à travers la variable res déclarée final*/
-    var data = json.decode(result.body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
-    for(int currentInd= 0 ;currentInd < data.length; currentInd++) {/*on parcourt la liste de tous les éléments de chaque
+      var data = json.decode(result
+          .body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
+      for (int currentInd = 0; currentInd < data.length; currentInd++) {
+        /*on parcourt la liste de tous les éléments de chaque
     ligne dans data , on converti chaque élément dan le type requis pour l'objet et on change les variables de l'objets, puis
     on applique un setState() pour mettre à jour le Widget*/
-      var row = data[currentInd];
-      String idmincell = row[3];
-      String idmaxcell = row[1];
-      int tensionmaxcell = int.parse(row[0]);
-      int tensionmincell = int.parse(row[2]);
-      int tensionmoycell = int.parse(row[4]);
+        var row = data[currentInd];
+        String idmincell = row[3];
+        String idmaxcell = row[1];
+        int tensionmaxcell = int.parse(row[0]);
+        int tensionmincell = int.parse(row[2]);
+        int tensionmoycell = int.parse(row[4]);
 
+        setState(() {
+          idcellmin = idmincell;
+          idcellmax = idmaxcell;
+          maxcelltension = tensionmaxcell;
+          mincelltension = tensionmincell;
+          moycelltension = tensionmoycell;
+        });
+      }
+    }else{//Sinon si le nombre de cellules est égal à tout autre nombre faire
       setState(() {
-        idcellmin = idmincell;
-        idcellmax = idmaxcell;
-        maxcelltension = tensionmaxcell;
-        mincelltension = tensionmincell;
-        moycelltension = tensionmoycell;
+        idcellmin = "N/A";
+        idcellmax = "N/A";
+        maxcelltension = 0;
+        mincelltension = 0;
+        moycelltension = 0;
       });
     }
   }
   @override
   Widget build(BuildContext context){
-    return  Row( //les trois box pour afficher les Tensions min, moy et max des cellules
-      //Vont varier en fonction des points de chaque courbe pris à un moment donné Comment faire?
+    return  Row( //les trois box pour afficher les Tensions min, moy et max des cellules vont varier en fonction des points de chaque courbe pris à un moment donné Comment faire?
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(

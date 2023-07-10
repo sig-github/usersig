@@ -1,6 +1,6 @@
 class CelluleModel{
   double equilibrage = 0;
-  int tension = 0;
+  double tension = 0;
   int SoC = 0;
   double temperature = 25;
   String id = '';

@@ -39,8 +39,8 @@ class AppliSig extends StatelessWidget {
 
       routes: { //les routes pour les autres pages utilisées dans l'application en global
         '/batterie' : (context) => const Batterie(),
-        '/batterieDetail' : (context) => const BatterieDetail(tableName: "",battery: {}),
-        '/cellulesDetail' : (context) => const CelluleDetail(tableName: "")
+        '/batterieDetail' : (context) => const BatterieDetail(cellsNumber: 0,tableName: "",battery: {}),
+        '/cellulesDetail' : (context) => const CelluleDetail(cellsNumber: 0,tableName: "")
       },
 
 

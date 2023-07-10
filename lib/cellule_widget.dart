@@ -9,7 +9,8 @@ import 'dart:async';//sert à quoi??
 
 class CelluleWidget extends StatefulWidget {
   final String tableName;
-  const CelluleWidget({required this.tableName,Key? key}) : super(key: key);
+  final int cellsNumber;
+  const CelluleWidget({required this.cellsNumber,required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<CelluleWidget> createState() => _CelluleWidgetState();
@@ -21,22 +22,21 @@ class _CelluleWidgetState extends State<CelluleWidget> {
   void cellsSetUp() {/*Fonction qui en prenant en compte le nombre de cellules et nous crée des objets CelluleModel vide avec
                      des identifiants qui varient et les stocke dans un tableau cells qui sera utilisé pour
                      mettre en place la liste de Widget Cellules avec la jauge linéaire de tension*/
-    for(int i=0; i < Get.arguments["nombrecellules"]; i++){
+    for(int i=0; i < widget.cellsNumber; i++){
       cells.insert(i, CelluleModel(id: 'tensioncell$i', tension: 0, temperature: 0, equilibrage: 0, SoC: 0));
     }
   }
 
   Future<void> getCellsData() async { //fonction pour afficher la liste des cellules avec leur tension et leur température
-    final res = await http.get(Uri.parse('http://localhost/testsig1/.vs/cellscardobjquery.php? tableName=${widget.tableName}')); /*On récupère le résultat de
+    final res = await http.get(Uri.parse('http://localhost/testsig1/.vs/cellscardobjquery.php? tableName=${widget.tableName}&cellsNumber=${widget.cellsNumber}')); /*On récupère le résultat de
     la requête à travers la variable res déclarée final*/
     var data = json.decode(res.body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
-    data.forEach((key, value) {
-       //problème besoin de SoC, pour le moment je modifierai juste tension et température
-      for (int i = 0; i< value.length; i++) {
-        for(int j = 0; j< Get.arguments["nombrecellules"]; j++){
-          if(Get.arguments["nombrecellules"] == 8) { // si le nombre de cellules = 8 alors...
+    if(widget.cellsNumber == 8) { // si le nombre de cellules = 8 alors...
+      data.forEach((key, value) {
+        for (int i = 0; i < value.length; i++) {
+          for (int j = 0; j < widget.cellsNumber; j++) {
             if (cells[j].id == key) {
-              cells[j].tension = int.parse(value[i][2]);
+              cells[j].tension = double.parse(value[i][2]);
               if (j < 4) {
                 cells[j].temperature = double.parse(value[i][0]);
               } else {
@@ -52,14 +52,32 @@ class _CelluleWidgetState extends State<CelluleWidget> {
               });
             }
           }
-          if(Get.arguments["nombrecellules"] == 16){ // si le nombre de cellules = 16 alors...
-
-          }
-
         }
+      });
+    }
+    else { // si le nombre de cellules = 16 alors... ||| Attention un problème pourrait survenir de là  on reviendra voir en testant
+      data.forEach((key, value) {
+        for (int i = 0; i < value.length; i++) {
+          for (int j = 0; j < widget.cellsNumber; j++) {
+            if (cells[j].id == key) {
+              cells[j].tension = double.parse(double.parse(value[i][16]).toStringAsFixed(1));
 
-      }
-    });
+              cells[j].temperature = double.parse(double.parse(value[i][j]).toStringAsFixed(1)) ; //ça va s'incrémenter tout seul et par conséquent attribuer les valeurs à chaque température d'objets dans cells
+
+
+
+              /*if (kDebugMode) {
+                print('${cells[j].tension}, ${cells[j].temperature}');
+              }*/
+
+              setState(() {
+
+              });
+            }
+          }
+        }
+      });
+    }
   }
   @override
   void initState() {//fonction qui s'exécute une seule fois au début de l'arbre d'exécution de cette classe
@@ -83,9 +101,12 @@ class _CelluleWidgetState extends State<CelluleWidget> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                    children: [
-                     Text(
-                       cells[index].id,
-                       style: const TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w700, color: Colors.black),
+                     SizedBox(
+                       width: 100,
+                       child: Text(
+                         cells[index].id,
+                         style: const TextStyle(fontFamily:'Nunito' , fontSize:15.0 , fontStyle:FontStyle.normal, fontWeight:FontWeight.w700, color: Colors.black),
+                       ),
                      ),
 
                       const SizedBox(width: 5.0),

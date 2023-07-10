@@ -31,12 +31,7 @@ class _BatterieWidgetState extends State<BatterieWidget> {
         capacite: 0.0, tensionNominale: 0.0, temperature: 0.0,
         batteryStatus: 'inactif', courant: 0.0, cycle: 0, nombreCells: 8
     )*/
-    /*BatterieModel(classe: 'LFP', modele: 105, SoC: 80, etat: 'Actif', alerte: false, SoH: 100, nomBms: 'UDAN',
-    tension: 52985, capacite: 100,tensionNominale : 28800, temperature : 25, batteryStatus:"charge", courant: 1.0,cycle :50,
-    nombreCells: 4),
-*/];//Ce sont les batteries dont on dispose, ce qui veut dire que cette information doit être relié au backend plus tard
-
-  //final List<Map<String, dynamic>> batteryData = [] ;
+    ];
 
   String activity = ''; // variable que j'ai crée pour l'état de la batterie charge, décharge,none
   //final List _rows = [];
@@ -80,15 +75,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
             batteryStatus: 'inactif', courant: 0.0, cycle: 0, nombreCells: 8
         );*/
       }
-      /*if(kDebugMode){
-        print(tests.length);
-        print(tests[0].cycle);
-        //print(batteryData);
-        //print(batteryData);
-      }*/
-      /*setState(() {
-
-      });*/
       getData();
     } else {
       throw Exception('Failed to fetch data');
@@ -99,8 +85,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
   void getData() {
     /*fonction qui permet de récupérer les lignes de données contenant les informations sur la
     batterie*/
-    //final res = await http.get(Uri.parse('http://localhost/testsig1/.vs/getdata.php'));/*On récupère le résultat de la requête à travers la variable res déclarée final*/
-    //var data = json.decode(res.body); /*on décode ce qu'on a récupéré et on le stocke dans data*/
     var index = 0;
     batteryData.keys.forEach((key) { //ajout en fonction de la nouvelle structure
       for (var item in batteryData[key]) {
@@ -139,7 +123,7 @@ class _BatterieWidgetState extends State<BatterieWidget> {
               SoH,
               bmstype,
               tension,
-              (SoC / 100) * 72,
+              (SoC / 100) * 72,//voir ici pour UDAN lorsqu'on sera sur UDAN
               3.2 * nbrecellules,
               temperature,
               activity,
@@ -188,12 +172,7 @@ class _BatterieWidgetState extends State<BatterieWidget> {
                       color: Colors.white,
                       child: InkResponse(
                         onTap: (){
-                          /*Navigator.pushReplacementNamed(context, '/batterieDetail',
-                          arguments : {
-                           // "classe" : tests[index].classe
-                          }
-                      );*/
-                          Get.to(()=> BatterieDetail(tableName: tableNames[dist],battery: batteryData),
+                          Get.to(()=> BatterieDetail(cellsNumber: tests[index].nombreCells ,tableName: tableNames[dist],battery: batteryData),
                               arguments: {
                                 "SoH" : tests[index].SoH,
                                 "tension" : tests[index].tension,
@@ -207,19 +186,6 @@ class _BatterieWidgetState extends State<BatterieWidget> {
                                 "courant" : tests[index].courant,
                                 "cycle" : tests[index].cycle,
                                 "nombreCellule" : tests[index].nombreCells
-                                /*"SoH" : tests[0].SoH,
-                            "tension" : tests[0].tension,
-                            "classe" : tests[0].classe,
-                            "modele" : tests[0].modele,
-                            "tensionnominale" : tests[0].tensionNominale,
-                            "capacite" : tests[0].capacite,
-                            "SoC" : tests[0].SoC,
-                            "temperature" : tests[0].temperature,
-                            "batterystatus" : tests[0].batteryStatus,
-                            "courant" : tests[0].courant,
-                            "cycle" : tests[0].cycle,
-                            "nombreCellule" : tests[0].nombreCells*/
-
                               }
                           );
                         },

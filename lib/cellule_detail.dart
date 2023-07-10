@@ -16,7 +16,8 @@ import 'dart:async'; //sert à quoi??
 
 class CelluleDetail extends StatefulWidget {
   final String tableName; //vérifier si c'est privée à la classe un peu plus tard au cas où il y aurait un résultat bizarre.
-  const CelluleDetail({required this.tableName,Key? key}) : super(key: key);
+  final int cellsNumber;
+  const CelluleDetail({required this.cellsNumber,required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<CelluleDetail> createState() => _CelluleDetailState();
@@ -57,7 +58,7 @@ class _CelluleDetailState extends State<CelluleDetail> {
   }
 
   Future<void> _getData() async { //fonction pour récupérer les données pour notre courbe
-    var url = 'http://localhost/testsig1/.vs/cellsqueryo.php? page=$currentPage&tableName=${widget.tableName}';
+    var url = 'http://localhost/testsig1/.vs/cellsqueryo.php? page=$currentPage&tableName=${widget.tableName}&cellsNumber=${widget.cellsNumber}';
     var response = await http.get(Uri.parse(url));/* Récupération des éléments
     de la requête PHP*/
     var data = json.decode(response.body); //On décode le json qui a été envoyé et on le stocke dans la variable data
@@ -72,12 +73,12 @@ class _CelluleDetailState extends State<CelluleDetail> {
       }
       for(int i = 0; i < value.length; i++) { /* Pour chaque lignes temps et valeur de
       tension de chaque cellule faire*/
-        datacells.add(CellData(id: value[i][0], heure: format.parse(value[i][1]), tension: value[i][2])); /* On ajoute un objet CellData dont les valeurs
+        datacells.add(CellData(heure: format.parse(value[i][0]), tension: value[i][1])); /* On ajoute un objet CellData dont les valeurs
         correspondent à chaque ligne de value dans la liste datacells
         */
         //id: value[i][0],
         setState(() {
-          date= value[i][3].toString();
+          date= value[i][2].toString();
         });
       }
       seriesData.add( /*On ajoute maintenant la serie avec les données de series correspondant à chaque cellules*/
@@ -104,6 +105,22 @@ class _CelluleDetailState extends State<CelluleDetail> {
                   return Colors.lightGreenAccent;
                 case 'tensioncell7':
                   return AppStyle.accent_color;
+                case 'tensioncell8':
+                  return Colors.black12;
+                case 'tensioncell9':
+                  return Colors.white24;
+                case 'tensioncell10':
+                  return Colors.pinkAccent;
+                case 'tensioncell11':
+                  return Colors.deepPurple;
+                case 'tensioncell12':
+                  return Colors.blueGrey;
+                case 'tensioncell13':
+                  return Colors.brown;
+                case 'tensioncell14':
+                  return Colors.lime;
+                case 'tensioncell15':
+                  return Colors.tealAccent;
                 default:
                   return
                     Colors.amberAccent;
@@ -132,6 +149,22 @@ class _CelluleDetailState extends State<CelluleDetail> {
                     return Colors.lightGreenAccent;
                   case 'tensioncell7':
                     return AppStyle.accent_color;
+                  case 'tensioncell8':
+                    return Colors.black12;
+                  case 'tensioncell9':
+                    return Colors.white24;
+                  case 'tensioncell10':
+                    return Colors.pinkAccent;
+                  case 'tensioncell11':
+                    return Colors.deepPurple;
+                  case 'tensioncell12':
+                    return Colors.blueGrey;
+                  case 'tensioncell13':
+                    return Colors.brown;
+                  case 'tensioncell14':
+                    return Colors.lime;
+                  case 'tensioncell15':
+                    return Colors.tealAccent;
                   default:
                     return
                       Colors.amberAccent;
@@ -269,11 +302,11 @@ class _CelluleDetailState extends State<CelluleDetail> {
 
                 const SizedBox(height: 20.0),
 
-                TensionMinMoyMax(tableName: widget.tableName), //appel du constructeur de l'entité TensionMinMoyMax
+                TensionMinMoyMax(cellsNumber: Get.arguments["nombrecellules"],tableName: widget.tableName), //appel du constructeur de l'entité TensionMinMoyMax
 
                 const SizedBox(height: 10.0),
 
-                SizedBox(width:770.0 ,child: CelluleWidget(tableName: widget.tableName)),//appel de l'entité CelluleWidget( )
+                SizedBox(width:770.0 ,child: CelluleWidget(cellsNumber: Get.arguments["nombrecellules"],tableName: widget.tableName)),//appel de l'entité CelluleWidget( )
 
                 const SizedBox(height: 60.0),
 

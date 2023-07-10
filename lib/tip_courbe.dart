@@ -12,7 +12,8 @@ import 'dart:async';//sert à quoi??
 
 class TipCourbe extends StatefulWidget {
   final String tableName;
-  const TipCourbe({required this.tableName,Key? key}) : super(key: key);
+  final int cellsNumber;
+  const TipCourbe({required this.cellsNumber,required this.tableName,Key? key}) : super(key: key);
 
   @override
   State<TipCourbe> createState() => _TipCourbeState();
@@ -70,11 +71,25 @@ class _TipCourbeState extends State<TipCourbe> {
     /*Ici j'éffectue une opération de conversion des données du type String rendu âr Json aux types requis pour les paramètres
      des objets ChartData courbe que je stocke dans la liste datas en fonction des informations provenantes de jsonData.
      jsonData qui récupère tous les éléments de la table comme la requête PHP correspondante*/
-
-    datas = List<ChartDataCourbes>.from(jsonData.map((data) => ChartDataCourbes(valSoC: double.parse(data['SoC']),
-        tension: (1000*double.parse(data['tension'])).toInt(), temps: int.parse(data['id']),
-        intensite: double.parse(data['courant']), temperature: double.parse(data['temperature']), date: data['date'], heure: format.parse(data['heure']))).toList());
-    return datas;
+    if(widget.cellsNumber==8) {
+      datas = List<ChartDataCourbes>.from(jsonData.map((data) =>
+          ChartDataCourbes(valSoC: double.parse(data['SoC']),
+              tension: (1000 * double.parse(data['tension'])).toInt(),
+              intensite: double.parse(data['courant']),
+              temperature: double.parse(data['temperature']),
+              date: data['date'],
+              heure: format.parse(data['heure']))).toList());
+      return datas;
+    }else{
+      datas = List<ChartDataCourbes>.from(jsonData.map((data) =>
+          ChartDataCourbes(valSoC: double.parse(data['SoC']),
+              tension: (double.parse(data['tension'])).toInt(),
+              intensite: double.parse(data['courant']),
+              temperature: double.parse(data['temperature']),
+              date: data['date'],
+              heure: format.parse(data['heure']))).toList());
+      return datas;
+    }
   }
 
   Future<List<ChartDataCourbes>> fetchData(String borneInferieure, String borneSuperieure) async {
@@ -90,10 +105,25 @@ class _TipCourbeState extends State<TipCourbe> {
 
       final jsonData = json.decode(response.body);
       dataso = [];
-      dataso = List<ChartDataCourbes>.from(jsonData.map((data) => ChartDataCourbes(valSoC: double.parse(data['SoC']),
-          tension: (1000*double.parse(data['tension'])).toInt(), temps: int.parse(data['id']),
-          intensite: double.parse(data['courant']), temperature: double.parse(data['temperature']),  date: data['date'], heure: format.parse(data['heure']))).toList());
+    if(widget.cellsNumber==8) {
+      dataso = List<ChartDataCourbes>.from(jsonData.map((data) =>
+          ChartDataCourbes(valSoC: double.parse(data['SoC']),
+              tension: (1000 * double.parse(data['tension'])).toInt(),
+              intensite: double.parse(data['courant']),
+              temperature: double.parse(data['temperature']),
+              date: data['date'],
+              heure: format.parse(data['heure']))).toList());
       return dataso;
+    }else{
+      dataso = List<ChartDataCourbes>.from(jsonData.map((data) =>
+          ChartDataCourbes(valSoC: double.parse(data['SoC']),
+              tension: (double.parse(data['tension'])).toInt(),
+              intensite: double.parse(data['courant']),
+              temperature: double.parse(data['temperature']),
+              date: data['date'],
+              heure: format.parse(data['heure']))).toList());
+      return dataso;
+    }
   }
 
 
