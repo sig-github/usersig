@@ -342,7 +342,11 @@ Partie de la classe BatterieDetail (fichier batterie_detail.dart) :
 
 Partie de la classe TipCourbe (fichier tip_courbe.dart) : 
     
-    Future dayNumbers() async{//fonction qui permet de récupérer le nombre de jours dans un mois
+    La classe TipCourbe renvoie la vue sur laquelle on peut observer les courbes tension moyenne en fonction du temps et intensité moyenne en fonction du temps .
+    J'utilise un Future Builder pour l'implémenter. Il faut donc aller voir la documentation de Future Builder sur la doc officielle Flutter pour bien la comprendre.
+
+
+    Future<void> dayNumbers() async{//fonction qui permet de récupérer le nombre de jours dans un mois
     // ça se répète c'est possible de le rendre global pour ne seulement utiliser qu'un réfléchir à ça à l'optimisation
 
     final response = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php? tableName=${widget.tableName}'));
@@ -350,4 +354,175 @@ Partie de la classe TipCourbe (fichier tip_courbe.dart) :
     final numberday = jsonDecode(response.body);
     nombreJours = numberday[0]['nombrejours'];
     }
-    Cette
+    Cette fonction ne fait que récupérer le nombre de jours disponible dans le mois pour l'affichage des courbes sur un mois. Pour récupérer le nombre de jours la fonction
+    exploite une réponse d'une requête http envoyée par le fichier php côté serveur nombredejourmois.php .
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Future<List<dynamic>> fetchMySQLData() async{ /*on crée une fonction fetchMySQLData() pour récupérer les données avec la
+    passerelle PHP puis on stocke dans data qu'on retourne à la fonction*/
+    var urlo = 'http://localhost/testsig1/.vs/courbebattun.php? pages=$currentPagio&tableName=${widget.tableName}';
+    final res = await http.get(Uri.parse(urlo)); //courbebatt.php en général
+    var data = json.decode(res.body);
+    return data;
+    }
+    Cette fonction asynchrone retourne une Liste dynamique d'informations envoyé depuis le côté serveur courbebattun.php à travers une requête http. 
+    Pour voir exactement quelles infos récupère t-on se référer au fichier courbebattun.php côté serveur.
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Future<List<ChartDataCourbes>> fetchDataCourbes() async {
+        /* ici on appelle la fonction fetchMySQLData() qu'on affecte à la variable jsonData qui est du même type de donnée que jsonData
+        List<dynamic>*/
+        List<dynamic> jsonData = await fetchMySQLData();
+    
+        /*Ici j'éffectue une opération de conversion des données du type String rendu âr Json aux types requis pour les paramètres
+         des objets ChartData courbe que je stocke dans la liste datas en fonction des informations provenantes de jsonData.
+         jsonData qui récupère tous les éléments de la table comme la requête PHP correspondante*/
+        if(widget.cellsNumber==8) {
+          datas = List<ChartDataCourbes>.from(jsonData.map((data) =>
+              ChartDataCourbes(valSoC: double.parse(data['SoC']),
+                  tension: (1000 * double.parse(data['tension'])).toInt(),
+                  intensite: double.parse(data['courant']),
+                  temperature: double.parse(data['temperature']),
+                  date: data['date'],
+                  heure: format.parse(data['heure']))).toList());
+          return datas;
+        }else{
+          datas = List<ChartDataCourbes>.from(jsonData.map((data) =>
+              ChartDataCourbes(valSoC: double.parse(data['SoC']),
+                  tension: (double.parse(data['tension'])).toInt(),
+                  intensite: double.parse(data['courant']),
+                  temperature: double.parse(data['temperature']),
+                  date: data['date'],
+                  heure: format.parse(data['heure']))).toList());
+          return datas;
+        }
+    }
+    Cette fonction exploite la précédente pour récupérer les informations telles que la tension, l'intensité, la température , la date et l'heure. Elle formatte ses infos
+    et les passe en valeurs au constructeur de la classe ChartDataCourbes. Elle est asynchrone
+    En éffet nous créeons une variable publique datas qui va recevoir une liste d'objets ChartDataCourbes qu'on génère à partir des lignes d'information contenues dans le 
+    resultat que retourne la fonction précédente fetchMySQLData(). Ces objets ChartDataCourbes sont destinés à alimenter les courbes tension moyenne en fonction du temps et
+    intensité moyenne en fonction du temps.
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Future<List<ChartDataCourbes>> fetchData(String borneInferieure, String borneSuperieure) async {
+    //Cette fonction permet de questionner PHP pour avoir les données entre la borneInférieure et la borneSuperieure
+            var urloo = 'http://localhost/testsig1/.vs/miseajour.php? tableName=${widget.tableName}';
+            final response = await http.post(
+               Uri.parse(urloo),
+              body: {
+                'borne_inferieure': borneInferieure,
+                'borne_superieure': borneSuperieure,
+              },
+            );
+        
+              final jsonData = json.decode(response.body);
+              dataso = [];
+            if(widget.cellsNumber==8) {
+              dataso = List<ChartDataCourbes>.from(jsonData.map((data) =>
+                  ChartDataCourbes(valSoC: double.parse(data['SoC']),
+                      tension: (1000 * double.parse(data['tension'])).toInt(),
+                      intensite: double.parse(data['courant']),
+                      temperature: double.parse(data['temperature']),
+                      date: data['date'],
+                      heure: format.parse(data['heure']))).toList());
+              return dataso;
+            }else{
+              dataso = List<ChartDataCourbes>.from(jsonData.map((data) =>
+                  ChartDataCourbes(valSoC: double.parse(data['SoC']),
+                      tension: (double.parse(data['tension'])).toInt(),
+                      intensite: double.parse(data['courant']),
+                      temperature: double.parse(data['temperature']),
+                      date: data['date'],
+                      heure: format.parse(data['heure']))).toList());
+              return dataso;
+            }
+    }
+    Cette fonction effectue à peu près la même chose que la fonction fetchDataCourbes() à la seule exception qui ne s'appui pas sur une autre fonction comme le fais la 
+    fonction fecthDataCourbes().
+    La fonction ci-dessus prend en paramêtre deux chaîne de caractères représentant respectivement la date + heure de début et la date + heure de fin. Si on va être rigoureux,
+    on va juste parler de l'heure de début et l'heure de fin car en vrai la date ne change pas sur les deux bornes de l'intervalle de temps.
+
+    Dans cette fonction on récupère les données envoyées côté serveur entre ces deux intervalle de temps depuis le fichier php miseajour.php pour pouvoir générer une liste 
+    d'objets ChartDataCourbes qui vont servir à alimenter les courbes.
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    List<ChartSeries<ChartDataCourbes, dynamic>> _createDefaultTensionTemps(List<ChartDataCourbes> dats) {// Liste de la partie Tension/temps, C'est un truc propre aux courbes
+        return <ChartSeries<ChartDataCourbes, dynamic>>[
+          //SplineAreaSeries
+          AreaSeries(
+            animationDelay: 5,
+            dataSource: dats,
+            xValueMapper: (ChartDataCourbes data, _) => data.heure,
+            yValueMapper: (ChartDataCourbes data, _) => data.tension,
+            //SplineType: SplineType.natural,
+            gradient: LinearGradient(
+              colors: [
+                AppStyle.spline_color,
+                AppStyle.bg_color.withAlpha(150),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          LineSeries(
+              animationDelay: 5,
+              dataSource: dats,
+              color: AppStyle.accent_color,
+              width: 4,
+              markerSettings: MarkerSettings( //Pour mettre en évidence les points
+                color: Colors.white,
+                borderWidth: 2,
+                shape: DataMarkerType.circle,
+                borderColor: AppStyle.accent_color,
+                isVisible: true,
+              ),
+              xValueMapper: (ChartDataCourbes data, _) => data.heure,
+              yValueMapper: (ChartDataCourbes data, _) => data.tension),
+        ];
+    }
+    Cette fonction a pour but de générer les series de courbes nécéssaires pour tracer la tension moyenne en fonctin du temps. Elle prend en paramètre une Liste d'objets
+    ChartDataCourbes qui représente sa source de données (ie dataSource : dats).
+
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    List<ChartSeries<ChartDataCourbes, dynamic>> _intensiteTemps(List<ChartDataCourbes> dats) { //Liste de la partie intensité/temps
+
+          return <ChartSeries<ChartDataCourbes, dynamic>>[
+            AreaSeries(
+              animationDelay: 10,
+              dataSource: dats,
+              xValueMapper: (ChartDataCourbes data, _) => data.heure,
+              yValueMapper: (ChartDataCourbes data, _) => data.intensite,
+              //splineType: SplineType.natural,
+              gradient: LinearGradient(
+                colors: [
+                  AppStyle.spline_color,
+                  AppStyle.bg_color.withAlpha(150),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            LineSeries(
+                animationDelay: 10,
+                dataSource: dats,
+                color: AppStyle.accent_color,
+                width: 4,
+                markerSettings: MarkerSettings( //Pour mettre en évidence les points
+                  color: Colors.white,
+                  borderWidth: 2,
+                  shape: DataMarkerType.circle,
+                  borderColor: AppStyle.accent_color,
+                  isVisible: true,
+                ),
+                xValueMapper: (ChartDataCourbes data, _) => data.heure,
+                yValueMapper: (ChartDataCourbes data, _) => data.intensite)
+          ];
+    }
+    Cette fonction a pour but de générer les series de courbes nécéssaires pour tracer l'intensité moyenne en fonctin du temps. Elle prend en paramètre une liste d'objets
+    ChartDataCourbes qui représente sa source de données (ie dataSource : dats).
+

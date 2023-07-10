@@ -40,7 +40,7 @@ class _TipCourbeState extends State<TipCourbe> {
 
 
 
-  Future dayNumbers() async{//fonction qui permet de récupérer le nombre de jours dans un mois
+  Future<void> dayNumbers() async{//fonction qui permet de récupérer le nombre de jours dans un mois
     // ça se répète c'est possible de le rendre global pour ne seulement utiliser qu'un réfléchir à ça à l'optimisation
 
     final response = await http.get(Uri.parse('http://localhost/testsig1/.vs/nombredejoursmois.php? tableName=${widget.tableName}'));
